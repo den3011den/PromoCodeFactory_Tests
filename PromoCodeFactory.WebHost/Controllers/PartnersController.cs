@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.DataAccess.Repositories.Exceptions;
 using PromoCodeFactory.WebHost.Models;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,12 @@ namespace PromoCodeFactory.WebHost.Controllers
         : ControllerBase
     {
         private readonly IRepository<Partner> _partnersRepository;
+        private readonly IPartnerPromoCodeLimitRepository _partnerPromoCodeLimitRepository;
 
-        public PartnersController(IRepository<Partner> partnersRepository)
+        public PartnersController(IRepository<Partner> partnersRepository, IPartnerPromoCodeLimitRepository partnerPromoCodeLimitRepository)
         {
             _partnersRepository = partnersRepository;
+            _partnerPromoCodeLimitRepository = partnerPromoCodeLimitRepository;
         }
 
         [HttpGet]
@@ -74,74 +77,61 @@ namespace PromoCodeFactory.WebHost.Controllers
             return Ok(response);
         }
 
+
+        /// <summary>
+        /// Добавление нового действующего лимита партнёру
+        /// </summary>
+        /// <param name="id">ИД партнёра</param>
+        /// <param name="request">Добавляемый лимит - объект SetPartnerPromoCodeLimitRequest</param>
+        /// <returns></returns>
+        /// <response code="201">Успешное выполнение. Лимит добавлен партнёру</response>
+        /// <response code="400">Проблема при добавлении лимита. Смотрите пояснение к ответу. Лимит не добавлен партнёру</response>  
+        /// <response code="404">Партнёр с указанным ИД не найден</response>  
         [HttpPost("{id}/limits")]
         public async Task<IActionResult> SetPartnerPromoCodeLimitAsync(Guid id, SetPartnerPromoCodeLimitRequest request)
         {
 
-            if (request.Limit <= 0)
-                return BadRequest("Лимит должен быть больше 0");
-            // !!! Исправление. Добавлена проверка, что партнёру добавляется действующий на данный момент лимит
-            if (request.EndDate < DateTime.Now)
-                return BadRequest("Дата окончания добавляемого лимита должна быть больше текущих даты/времени (устанавливаемый лимит должен быть действующим на момент добавления)");
+            PartnerPromoCodeLimit newPartnerPromoCodeLimit = null;
 
-            var partner = await _partnersRepository.GetByIdAsync(id);
-
-            if (partner == null)
-                return NotFound();
-
-            //Если партнер заблокирован, то нужно выдать исключение
-            if (!partner.IsActive)
-                return BadRequest("Данный партнер не активен");
-
-            //Установка лимита партнеру            
-            /*var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
-                !x.CancelDate.HasValue); */
-
-            // !!! Исправление. Нужно найти действующие лимиты, на даннный момент, а не единственный когда то отменённый
-            var activeLimits = partner.PartnerLimits.Where(x => !x.CancelDate.HasValue && x.EndDate >= DateTime.Now);
-
-            if (activeLimits != null && activeLimits.Count() > 0)
+            try
             {
-                // !!! Добавлена проверка на наличие у пратнёра более одного единовременно действующего лимита
-                // !!! Если такое обнаружено, то не делаем ничего - это недопустимая ситуация, требующая разбирательств
-                if (activeLimits.Count() > 1)
-                {
-                    return BadRequest("У партнёра " + partner.Name + " обнаружено более одного действующего лимита");
-                }
-
-                var activeLimit = activeLimits.FirstOrDefault();
-                if (activeLimit != null)
-                {
-                    //Если партнеру выставляется лимит, то мы 
-                    //должны обнулить количество промокодов, которые партнер выдал, если лимит закончился, 
-                    //то количество не обнуляется
-                    partner.NumberIssuedPromoCodes = 0;
-
-                    //При установке лимита нужно отключить предыдущий лимит
-                    activeLimit.CancelDate = DateTime.Now;
-                }
+                newPartnerPromoCodeLimit = await _partnerPromoCodeLimitRepository.SetPartnerPromoCodeLimitAsync(id, request);
+            }
+            catch (PartnerPromoCodeLimitNotLessOrEqualZeroException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (PartnerPromoCodeLimitNotActiveException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (PartnerNotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (PartnerNotActiveException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (PartnerHasMoreThenOneActivePartnerPromoCodeLimitException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
 
-            // !!! Исправление. Перенесено в качестве первой проверки в контороллере.
-            // !!! Если эта проверка не проходит сразу, то все остальные действия нет смысла выполнять
-            /* if (request.Limit <= 0)
-                return BadRequest("Лимит должен быть больше 0"); */
-
-            var newLimit = new PartnerPromoCodeLimit()
+            if (newPartnerPromoCodeLimit != null)
             {
-                Limit = request.Limit,
-                Partner = partner,
-                PartnerId = partner.Id,
-                CreateDate = DateTime.Now,
-                EndDate = request.EndDate
-            };
-
-            partner.PartnerLimits.Add(newLimit);
-
-            await _partnersRepository.UpdateAsync(partner);
-
-            return CreatedAtAction(nameof(GetPartnerLimitAsync), new { id = partner.Id, limitId = newLimit.Id }, null);
+                return CreatedAtAction(nameof(GetPartnerLimitAsync), new { id = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id }, null);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
+
 
         [HttpPost("{id}/canceledLimits")]
         public async Task<IActionResult> CancelPartnerPromoCodeLimitAsync(Guid id)
