@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 using PromoCodeFactory.WebHost.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PromoCodeFactory.WebHost.Controllers
 {
@@ -49,7 +49,7 @@ namespace PromoCodeFactory.WebHost.Controllers
 
             return Ok(response);
         }
-        
+
         [HttpGet("{id}/limits/{limitId}")]
         public async Task<ActionResult<PartnerPromoCodeLimit>> GetPartnerLimitAsync(Guid id, Guid limitId)
         {
@@ -57,7 +57,7 @@ namespace PromoCodeFactory.WebHost.Controllers
 
             if (partner == null)
                 return NotFound();
-            
+
             var limit = partner.PartnerLimits
                 .FirstOrDefault(x => x.Id == limitId);
 
@@ -70,40 +70,63 @@ namespace PromoCodeFactory.WebHost.Controllers
                 EndDate = limit.EndDate.ToString("dd.MM.yyyy hh:mm:ss"),
                 CancelDate = limit.CancelDate?.ToString("dd.MM.yyyy hh:mm:ss"),
             };
-            
+
             return Ok(response);
         }
-        
+
         [HttpPost("{id}/limits")]
         public async Task<IActionResult> SetPartnerPromoCodeLimitAsync(Guid id, SetPartnerPromoCodeLimitRequest request)
         {
+
+            if (request.Limit <= 0)
+                return BadRequest("Лимит должен быть больше 0");
+            // !!! Исправление. Добавлена проверка, что партнёру добавляется действующий на данный момент лимит
+            if (request.EndDate < DateTime.Now)
+                return BadRequest("Дата окончания добавляемого лимита должна быть больше текущих даты/времени (устанавливаемый лимит должен быть действующим на момент добавления)");
+
             var partner = await _partnersRepository.GetByIdAsync(id);
 
             if (partner == null)
                 return NotFound();
-            
+
             //Если партнер заблокирован, то нужно выдать исключение
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
-            
-            //Установка лимита партнеру
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
-                !x.CancelDate.HasValue);
-            
-            if (activeLimit != null)
+
+            //Установка лимита партнеру            
+            /*var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
+                !x.CancelDate.HasValue); */
+
+            // !!! Исправление. Нужно найти действующие лимиты, на даннный момент, а не единственный когда то отменённый
+            var activeLimits = partner.PartnerLimits.Where(x => !x.CancelDate.HasValue && x.EndDate >= DateTime.Now);
+
+            if (activeLimits != null && activeLimits.Count() > 0)
             {
-                //Если партнеру выставляется лимит, то мы 
-                //должны обнулить количество промокодов, которые партнер выдал, если лимит закончился, 
-                //то количество не обнуляется
-                partner.NumberIssuedPromoCodes = 0;
-                
-                //При установке лимита нужно отключить предыдущий лимит
-                activeLimit.CancelDate = DateTime.Now;
+                // !!! Добавлена проверка на наличие у пратнёра более одного единовременно действующего лимита
+                // !!! Если такое обнаружено, то не делаем ничего - это недопустимая ситуация, требующая разбирательств
+                if (activeLimits.Count() > 1)
+                {
+                    return BadRequest("У партнёра " + partner.Name + " обнаружено более одного действующего лимита");
+                }
+
+                var activeLimit = activeLimits.FirstOrDefault();
+                if (activeLimit != null)
+                {
+                    //Если партнеру выставляется лимит, то мы 
+                    //должны обнулить количество промокодов, которые партнер выдал, если лимит закончился, 
+                    //то количество не обнуляется
+                    partner.NumberIssuedPromoCodes = 0;
+
+                    //При установке лимита нужно отключить предыдущий лимит
+                    activeLimit.CancelDate = DateTime.Now;
+                }
             }
 
-            if (request.Limit <= 0)
-                return BadRequest("Лимит должен быть больше 0");
-            
+            // !!! Исправление. Перенесено в качестве первой проверки в контороллере.
+            // !!! Если эта проверка не проходит сразу, то все остальные действия нет смысла выполнять
+            /* if (request.Limit <= 0)
+                return BadRequest("Лимит должен быть больше 0"); */
+
             var newLimit = new PartnerPromoCodeLimit()
             {
                 Limit = request.Limit,
@@ -112,30 +135,30 @@ namespace PromoCodeFactory.WebHost.Controllers
                 CreateDate = DateTime.Now,
                 EndDate = request.EndDate
             };
-            
+
             partner.PartnerLimits.Add(newLimit);
 
             await _partnersRepository.UpdateAsync(partner);
-            
-            return CreatedAtAction(nameof(GetPartnerLimitAsync), new {id = partner.Id, limitId = newLimit.Id}, null);
+
+            return CreatedAtAction(nameof(GetPartnerLimitAsync), new { id = partner.Id, limitId = newLimit.Id }, null);
         }
-        
+
         [HttpPost("{id}/canceledLimits")]
         public async Task<IActionResult> CancelPartnerPromoCodeLimitAsync(Guid id)
         {
             var partner = await _partnersRepository.GetByIdAsync(id);
-            
+
             if (partner == null)
                 return NotFound();
-            
+
             //Если партнер заблокирован, то нужно выдать исключение
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
-            
+
             //Отключение лимита
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
+            var activeLimit = partner.PartnerLimits.FirstOrDefault(x =>
                 !x.CancelDate.HasValue);
-            
+
             if (activeLimit != null)
             {
                 activeLimit.CancelDate = DateTime.Now;
