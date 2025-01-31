@@ -21,7 +21,8 @@ namespace PromoCodeFactory.DataAccess.Repositories
 
         public async Task<IEnumerable<PartnerPromoCodeLimit>> GetActivePartnerPromoCodeLimitListAsync(Guid partnerId)
         {
-            return _db.PartnerPromoCodeLimit.Where(x => x.PartnerId == partnerId && !x.CancelDate.HasValue && x.EndDate >= DateTime.Now).ToList();
+            var retVar = _db.PartnerPromoCodeLimit.Where(x => x.PartnerId == partnerId && !x.CancelDate.HasValue && x.EndDate >= DateTime.Now).ToList();
+            return retVar;
 
         }
 
