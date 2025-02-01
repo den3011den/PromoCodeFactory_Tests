@@ -1,5 +1,4 @@
-﻿using PromoCodeFactory.Core.Domain.PromoCodeManagement;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
 namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
@@ -12,8 +11,8 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerPromoCodeLimitNotFoundException : Exception
     {
-        public PartnerPromoCodeLimitNotFoundException(PartnerPromoCodeLimit partnerPromoCodeLimit)
-                : base($"Партнёрский лимит на промокоды с ИД ${partnerPromoCodeLimit.Id} не найден")
+        public PartnerPromoCodeLimitNotFoundException(Guid partnerPromoCodeLimitId)
+                : base($"Партнёрский лимит на промокоды с ИД ${partnerPromoCodeLimitId} не найден")
         {
         }
         public PartnerPromoCodeLimitNotFoundException(SerializationInfo serializationInfo, StreamingContext streamingContext)

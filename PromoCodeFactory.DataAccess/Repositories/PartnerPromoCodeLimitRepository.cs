@@ -79,12 +79,12 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public async Task<bool> TurnOffPartnerPromoCodeLimitAsync(Partner partner, PartnerPromoCodeLimit partnerPromoCodeLimit)
         {
             var partnerFound = await _partnerRepository.GetByIdAsync(partner.Id);
-            if (partner == null)
+            if (partnerFound == null)
                 throw new PartnerNotFoundException(partner.Id);
 
             var partnerPromoCodeLimitFound = await GetByIdAsync(partnerPromoCodeLimit.Id);
             if (partnerPromoCodeLimitFound == null)
-                throw new PartnerNotFoundException(partner.Id);
+                throw new PartnerPromoCodeLimitNotFoundException(partnerPromoCodeLimit.Id);
 
             partner.NumberIssuedPromoCodes = 0;
             partnerPromoCodeLimitFound.CancelDate = DateTime.Now;

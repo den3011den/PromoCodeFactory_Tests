@@ -1,5 +1,0 @@
-﻿namespace PromoCodeFactory.UnitTests.Helpers
-{
-
-
-}

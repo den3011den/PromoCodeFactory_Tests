@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
-
-namespace PromoCodeFactory.DataAccess.Data
+﻿namespace PromoCodeFactory.DataAccess.Data
 {
+    /// <summary>
+    /// Инициализация БД - создание и наполнение начальными данными
+    /// </summary>
     public class EfDbInitializer
         : IDbInitializer
     {
@@ -11,21 +12,21 @@ namespace PromoCodeFactory.DataAccess.Data
         {
             _dataContext = dataContext;
         }
-        
+
         public void InitializeDb()
         {
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
-            
+
             _dataContext.AddRange(FakeDataFactory.Employees);
             _dataContext.SaveChanges();
-            
+
             _dataContext.AddRange(FakeDataFactory.Preferences);
             _dataContext.SaveChanges();
-            
+
             _dataContext.AddRange(FakeDataFactory.Customers);
             _dataContext.SaveChanges();
-            
+
             _dataContext.AddRange(FakeDataFactory.Partners);
             _dataContext.SaveChanges();
         }

@@ -4,9 +4,19 @@ using System;
 
 namespace PromoCodeFactory.UnitTests.Helpers
 {
+
+    /// <summary>
+    /// Класс с методами для заполнения тестовыми данными БД для теста 
+    /// метода SetPartnerPromoCodeLimitAsync контроллера PartnersController
+    /// </summary>
     public static class FillPartnerPromoCodeLimitData
     {
 
+        /// <summary>
+        /// Для партнёра с указанным ИД заполняет данные лимитов так, что 2 из них одновременно активны на текущий момент
+        /// </summary>
+        /// <param name="partnerId">ИД партнёра</param>
+        /// <param name="_db">Контекст БД</param>
         public static void FillPartnerPromoCodeLimitListWithTwoActiveLimitsForPartnerId(Guid partnerId, DataContext _db)
         {
             var partnerId2 = Guid.NewGuid();
@@ -107,6 +117,11 @@ namespace PromoCodeFactory.UnitTests.Helpers
         }
 
 
+        /// <summary>
+        /// Для партнёра с указанным ИД заполняет данные лимитов так, что только 1 из них активен на текущий момент
+        /// </summary>
+        /// <param name="partnerId">ИД партнёра</param>
+        /// <param name="_db">Контекст БД</param>
         public static void FillPartnerPromoCodeLimitListWithOneActiveLimit(PartnerPromoCodeLimit partnerPromoCodeLimit, DataContext _db)
         {
             var partnerId1 = partnerPromoCodeLimit.PartnerId;

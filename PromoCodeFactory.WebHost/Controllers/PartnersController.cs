@@ -122,11 +122,6 @@ namespace PromoCodeFactory.WebHost.Controllers
                 return BadRequest(ex.Message);
             }
 
-            //var retVar = CreatedAtAction(nameof(GetPartnerLimitAsync),
-            //    new { partnetId = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id },
-            //        null);
-
-
             var routVar = "";
             if (Request != null)
             {
@@ -144,7 +139,6 @@ namespace PromoCodeFactory.WebHost.Controllers
                 Limit = newPartnerPromoCodeLimit.Limit
             });
 
-            //return retVar;
         }
 
 

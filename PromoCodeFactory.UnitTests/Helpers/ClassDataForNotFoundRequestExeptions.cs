@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 namespace PromoCodeFactory.UnitTests.Helpers
 {
+
+    /// <summary>
+    /// Класс для перечисления всех исключений, вызывающих возврат NotFound 
+    /// в методе SetPartnerPromoCodeLimitAsync контроллера PartnersController
+    /// </summary>
     public class ClassDataForNotFoundRequestExeptions : IEnumerable<object[]>
     {
 

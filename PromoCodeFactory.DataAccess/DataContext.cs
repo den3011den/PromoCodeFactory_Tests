@@ -6,22 +6,45 @@ using System;
 
 namespace PromoCodeFactory.DataAccess
 {
+    /// <summary>
+    /// Контекст БД
+    /// </summary>
     public class DataContext
         : DbContext
     {
+        /// <summary>
+        /// Промокоды
+        /// </summary>
         public DbSet<PromoCode> PromoCodes { get; set; }
 
+        /// <summary>
+        /// Клиенты
+        /// </summary>
         public DbSet<Customer> Customers { get; set; }
 
+        /// <summary>
+        /// Предпочтения
+        /// </summary>
         public DbSet<Preference> Preferences { get; set; }
 
+        /// <summary>
+        /// Роли
+        /// </summary>
         public DbSet<Role> Roles { get; set; }
 
+        /// <summary>
+        /// Сотрудники
+        /// </summary>
         public DbSet<Employee> Employees { get; set; }
 
+        /// <summary>
+        /// Партнёры
+        /// </summary>
         public DbSet<Partner> Partners { get; set; }
 
-        // !!! Исправление. Не было таблицы
+        /// <summary>
+        /// Лимиты промокодов
+        /// </summary>
         public DbSet<PartnerPromoCodeLimit> PartnerPromoCodeLimit { get; set; }
 
         public DataContext()
@@ -38,6 +61,7 @@ namespace PromoCodeFactory.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // ограничения
             modelBuilder.Entity<CustomerPreference>()
                 .HasKey(bc => new { bc.CustomerId, bc.PreferenceId });
             modelBuilder.Entity<CustomerPreference>()
@@ -49,7 +73,6 @@ namespace PromoCodeFactory.DataAccess
                 .WithMany()
                 .HasForeignKey(bc => bc.PreferenceId);
 
-            // !!! Исправление. Не было ограничения
             modelBuilder.Entity<PartnerPromoCodeLimit>()
                 .HasOne(pr => pr.Partner);
         }

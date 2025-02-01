@@ -1,13 +1,17 @@
-﻿using System;
+﻿using PromoCodeFactory.Core.Domain.Administration;
+using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PromoCodeFactory.Core.Domain.Administration;
-using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 
 namespace PromoCodeFactory.DataAccess.Data
 {
     public static class FakeDataFactory
     {
+
+        /// <summary>
+        /// Класс формирования списка сущностей для надального заполнения базы данных
+        /// </summary>
         public static List<Employee> Employees => new List<Employee>()
         {
             new Employee()
@@ -97,7 +101,7 @@ namespace PromoCodeFactory.DataAccess.Data
                 return customers;
             }
         }
-        
+
         public static List<Partner> Partners => new List<Partner>()
         {
             new Partner()
@@ -112,7 +116,7 @@ namespace PromoCodeFactory.DataAccess.Data
                         Id = Guid.Parse("e00633a5-978a-420e-a7d6-3e1dab116393"),
                         CreateDate = new DateTime(2020,07,9).ToUniversalTime(),
                         EndDate = new DateTime(2020,10,9).ToUniversalTime(),
-                        Limit = 100 
+                        Limit = 100
                     }
                 }
             },
@@ -129,14 +133,14 @@ namespace PromoCodeFactory.DataAccess.Data
                         CreateDate = new DateTime(2020,05,3).ToUniversalTime(),
                         EndDate = new DateTime(2020,10,15).ToUniversalTime(),
                         CancelDate = new DateTime(2020,06,16).ToUniversalTime(),
-                        Limit = 1000 
+                        Limit = 1000
                     },
                     new PartnerPromoCodeLimit()
                     {
                         Id = Guid.Parse("0e94624b-1ff9-430e-ba8d-ef1e3b77f2d5"),
                         CreateDate = new DateTime(2020, 05, 3).ToUniversalTime(),
                         EndDate = new DateTime(2020, 10, 15).ToUniversalTime(),
-                        Limit = 100 
+                        Limit = 100
                     },
                 }
             },
@@ -152,7 +156,7 @@ namespace PromoCodeFactory.DataAccess.Data
                         Id = Guid.Parse("0691bb24-5fd9-4a52-a11c-34bb8bc9364e"),
                         CreateDate = new DateTime(2020, 07, 3).ToUniversalTime(),
                         EndDate = new DateTime(2020, 9, 9).ToUniversalTime(),
-                        Limit = 100 
+                        Limit = 100
                     }
                 }
             },

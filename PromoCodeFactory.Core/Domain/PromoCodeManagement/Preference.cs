@@ -1,10 +1,14 @@
-﻿using System;
-
-namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
+﻿namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
 {
+    /// <summary>
+    /// Клиентское Предпочтение
+    /// </summary>
     public class Preference
-        :BaseEntity
+        : BaseEntity
     {
+        /// <summary>
+        /// Наименование
+        /// </summary>
         public string Name { get; set; }
     }
 }

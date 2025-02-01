@@ -5,6 +5,10 @@ using PromoCodeFactory.DataAccess;
 
 namespace PromoCodeFactory.UnitTests.Helpers
 {
+
+    /// <summary>
+    /// Настройка InMemory БД для тестов
+    /// </summary>
     public static class InMemoryDatabaseContextFactory
     {
         private static DbContextOptions<DataContext> CreateNewContextOptions()

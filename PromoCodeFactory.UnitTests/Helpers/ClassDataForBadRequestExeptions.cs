@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 namespace PromoCodeFactory.UnitTests.Helpers
 {
+
+    /// <summary>
+    /// Класс для перечисления всех исключений, вызывающих возврат BadRequest 
+    /// в методе SetPartnerPromoCodeLimitAsync контроллера PartnersController
+    /// </summary>
     public class ClassDataForBadRequestExeptions : IEnumerable<object[]>
     {
 
