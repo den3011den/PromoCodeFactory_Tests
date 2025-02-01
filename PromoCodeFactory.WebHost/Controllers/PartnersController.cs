@@ -150,7 +150,7 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (partner == null)
                 return NotFound();
 
-            //Если партнер заблокирован, то нужно выдать исключение
+            // Если партнер заблокирован, то нужно выдать исключение
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
 
