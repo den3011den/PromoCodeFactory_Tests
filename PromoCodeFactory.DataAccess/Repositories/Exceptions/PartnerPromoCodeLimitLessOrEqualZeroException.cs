@@ -10,14 +10,14 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     /// 
 
     [Serializable]
-    public class PartnerPromoCodeLimitNotLessOrEqualZeroException : Exception
+    public class PartnerPromoCodeLimitLessOrEqualZeroException : Exception
     {
-        public PartnerPromoCodeLimitNotLessOrEqualZeroException(SetPartnerPromoCodeLimitRequest partnerPromoCodeLimit)
+        public PartnerPromoCodeLimitLessOrEqualZeroException(SetPartnerPromoCodeLimitRequest partnerPromoCodeLimit)
                 : base($"Лимит равен {partnerPromoCodeLimit.Limit.ToString()}, что меньше или равно нулю. Должен быть положительным числом")
         {
         }
 
-        public PartnerPromoCodeLimitNotLessOrEqualZeroException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+        public PartnerPromoCodeLimitLessOrEqualZeroException(SerializationInfo serializationInfo, StreamingContext streamingContext)
                 : base(serializationInfo, streamingContext)
         {
         }

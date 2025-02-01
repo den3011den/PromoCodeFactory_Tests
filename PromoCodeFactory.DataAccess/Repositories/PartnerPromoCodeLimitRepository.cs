@@ -29,7 +29,7 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public async Task<PartnerPromoCodeLimit> SetPartnerPromoCodeLimitAsync(Guid partnerId, SetPartnerPromoCodeLimitRequest setPartnerPromoCodeLimitRequest)
         {
             if (setPartnerPromoCodeLimitRequest.Limit <= 0)
-                throw new PartnerPromoCodeLimitNotLessOrEqualZeroException(setPartnerPromoCodeLimitRequest);
+                throw new PartnerPromoCodeLimitLessOrEqualZeroException(setPartnerPromoCodeLimitRequest);
             if (setPartnerPromoCodeLimitRequest.EndDate < DateTime.Now)
                 throw new PartnerPromoCodeLimitNotActiveException(setPartnerPromoCodeLimitRequest);
 
@@ -55,10 +55,7 @@ namespace PromoCodeFactory.DataAccess.Repositories
                     var activeLimit = partnerActivePromoCodeLimitList.FirstOrDefault();
                     if (activeLimit != null)
                     {
-                        partner.NumberIssuedPromoCodes = 0;
-                        //При установке лимита нужно отключить предыдущий лимит
-                        activeLimit.CancelDate = DateTime.Now;
-                        await _partnerRepository.UpdateAsync(partner);
+                        await TurnOffPartnerPromoCodeLimitAsync(partner, activeLimit);
 
                     }
                 }
@@ -77,6 +74,23 @@ namespace PromoCodeFactory.DataAccess.Repositories
 
             return newLimit;
 
+        }
+
+        public async Task<bool> TurnOffPartnerPromoCodeLimitAsync(Partner partner, PartnerPromoCodeLimit partnerPromoCodeLimit)
+        {
+            var partnerFound = await _partnerRepository.GetByIdAsync(partner.Id);
+            if (partner == null)
+                throw new PartnerNotFoundException(partner.Id);
+
+            var partnerPromoCodeLimitFound = await GetByIdAsync(partnerPromoCodeLimit.Id);
+            if (partnerPromoCodeLimitFound == null)
+                throw new PartnerNotFoundException(partner.Id);
+
+            partner.NumberIssuedPromoCodes = 0;
+            partnerPromoCodeLimitFound.CancelDate = DateTime.Now;
+            await _partnerRepository.UpdateAsync(partner);
+            await UpdateAsync(partnerPromoCodeLimitFound);
+            return true;
         }
     }
 }

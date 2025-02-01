@@ -9,6 +9,7 @@ namespace PromoCodeFactory.Core.Abstractions.Repositories
     {
         public Task<PartnerPromoCodeLimit> SetPartnerPromoCodeLimitAsync(Guid partnerId, SetPartnerPromoCodeLimitRequest setPartnerPromoCodeLimitRequest);
         public Task<IEnumerable<PartnerPromoCodeLimit>> GetActivePartnerPromoCodeLimitListAsync(Guid partnerId);
+        public Task<bool> TurnOffPartnerPromoCodeLimitAsync(Partner partner, PartnerPromoCodeLimit partnerPromoCodeLimit);
 
     }
 }

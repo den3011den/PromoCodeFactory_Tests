@@ -97,7 +97,7 @@ namespace PromoCodeFactory.WebHost.Controllers
             {
                 newPartnerPromoCodeLimit = await _partnerPromoCodeLimitRepository.SetPartnerPromoCodeLimitAsync(id, request);
             }
-            catch (PartnerPromoCodeLimitNotLessOrEqualZeroException ex)
+            catch (PartnerPromoCodeLimitLessOrEqualZeroException ex)
             {
                 return BadRequest(ex);
             }

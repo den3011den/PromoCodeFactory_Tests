@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
 {
@@ -8,7 +7,7 @@ namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
     {
         public string Name { get; set; }
 
-        public int NumberIssuedPromoCodes  { get; set; }
+        public int NumberIssuedPromoCodes { get; set; }
 
         public bool IsActive { get; set; }
 
