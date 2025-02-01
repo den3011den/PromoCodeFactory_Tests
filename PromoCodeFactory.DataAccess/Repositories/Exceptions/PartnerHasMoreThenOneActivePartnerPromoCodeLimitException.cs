@@ -13,6 +13,10 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerHasMoreThenOneActivePartnerPromoCodeLimitException : Exception
     {
+        public PartnerHasMoreThenOneActivePartnerPromoCodeLimitException()
+        {
+        }
+
         public PartnerHasMoreThenOneActivePartnerPromoCodeLimitException(IEnumerable<PartnerPromoCodeLimit> partnerPromoCodeLimitList)
                 : base($"Партнёр имеет более одного действующего лимита на выдачу промокодов")
         {

@@ -12,6 +12,10 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerNotActiveException : Exception
     {
+        public PartnerNotActiveException()
+        {
+        }
+
         public PartnerNotActiveException(Partner partner)
                 : base($"Партнёр с ИД ${partner.Id} не активен")
         {

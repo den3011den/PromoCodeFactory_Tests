@@ -122,14 +122,9 @@ namespace PromoCodeFactory.WebHost.Controllers
                 return BadRequest(ex);
             }
 
-            if (newPartnerPromoCodeLimit != null)
-            {
-                return CreatedAtAction(nameof(GetPartnerLimitAsync), new { id = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id }, null);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return CreatedAtAction(nameof(GetPartnerLimitAsync),
+                new { partnetId = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id },
+                    null);
         }
 
 

@@ -12,6 +12,9 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerPromoCodeLimitNotActiveException : Exception
     {
+        public PartnerPromoCodeLimitNotActiveException()
+        {
+        }
 
         public PartnerPromoCodeLimitNotActiveException(SetPartnerPromoCodeLimitRequest partnerPromoCodeLimit)
                 : base($"Лимит не активен. Дата окончания лимита должна быть больше текущих даты/времени (устанавливаемый лимит должен быть действующим на момент добавления)")

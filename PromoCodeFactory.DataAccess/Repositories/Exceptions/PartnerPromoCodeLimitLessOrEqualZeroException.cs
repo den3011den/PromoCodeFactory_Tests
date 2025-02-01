@@ -12,6 +12,13 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerPromoCodeLimitLessOrEqualZeroException : Exception
     {
+
+        public string MyProperty { get; set; }
+        public PartnerPromoCodeLimitLessOrEqualZeroException()
+        {
+
+        }
+
         public PartnerPromoCodeLimitLessOrEqualZeroException(SetPartnerPromoCodeLimitRequest partnerPromoCodeLimit)
                 : base($"Лимит равен {partnerPromoCodeLimit.Limit.ToString()}, что меньше или равно нулю. Должен быть положительным числом")
         {

@@ -11,6 +11,9 @@ namespace PromoCodeFactory.DataAccess.Repositories.Exceptions
     [Serializable]
     public class PartnerNotFoundException : Exception
     {
+        public PartnerNotFoundException()
+        {
+        }
 
         public PartnerNotFoundException(Guid partnerId)
                 : base($"Партнёр с ИД  {partnerId} не найден")
