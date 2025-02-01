@@ -37,7 +37,7 @@ namespace PromoCodeFactory.WebHost.Controllers
                 Id = x.Id,
                 Name = x.Name,
                 NumberIssuedPromoCodes = x.NumberIssuedPromoCodes,
-                IsActive = true,
+                IsActive = x.IsActive,
                 PartnerLimits = x.PartnerLimits
                     .Select(y => new PartnerPromoCodeLimitResponse()
                     {
@@ -87,7 +87,7 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <response code="201">Успешное выполнение. Лимит добавлен партнёру</response>
         /// <response code="400">Проблема при добавлении лимита. Смотрите пояснение к ответу. Лимит не добавлен партнёру</response>  
         /// <response code="404">Партнёр с указанным ИД не найден</response>  
-        [HttpPost("{id}/limits")]
+        [HttpPost("{id}")]
         public async Task<IActionResult> SetPartnerPromoCodeLimitAsync(Guid id, SetPartnerPromoCodeLimitRequest request)
         {
 
@@ -99,36 +99,56 @@ namespace PromoCodeFactory.WebHost.Controllers
             }
             catch (PartnerPromoCodeLimitLessOrEqualZeroException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (PartnerPromoCodeLimitNotActiveException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (PartnerNotFoundException ex)
             {
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
             catch (PartnerNotActiveException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (PartnerHasMoreThenOneActivePartnerPromoCodeLimitException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
-            return CreatedAtAction(nameof(GetPartnerLimitAsync),
-                new { partnetId = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id },
-                    null);
+            //var retVar = CreatedAtAction(nameof(GetPartnerLimitAsync),
+            //    new { partnetId = newPartnerPromoCodeLimit.PartnerId, limitId = newPartnerPromoCodeLimit.Id },
+            //        null);
+
+
+            var routVar = "";
+            if (Request != null)
+            {
+                routVar = new UriBuilder(Request.Scheme, Request.Host.Host, (int)Request.Host.Port, Request.Path.Value).ToString()
+                    + "/limits/" + newPartnerPromoCodeLimit.Id.ToString();
+            }
+
+            return Created(routVar, new PartnerPromoCodeLimitResponse
+            {
+                Id = newPartnerPromoCodeLimit.Id,
+                PartnerId = newPartnerPromoCodeLimit.PartnerId,
+                CreateDate = newPartnerPromoCodeLimit.CreateDate.ToString(),
+                CancelDate = newPartnerPromoCodeLimit.CancelDate.ToString(),
+                EndDate = newPartnerPromoCodeLimit.EndDate.ToString(),
+                Limit = newPartnerPromoCodeLimit.Limit
+            });
+
+            //return retVar;
         }
 
 
-        [HttpPost("{id}/canceledLimits")]
+        [HttpPost("canceledLimits/{id}")]
         public async Task<IActionResult> CancelPartnerPromoCodeLimitAsync(Guid id)
         {
             var partner = await _partnersRepository.GetByIdAsync(id);

@@ -89,34 +89,9 @@ namespace PromoCodeFactory.UnitTests.WebHost.Controllers.Partners
 
             var result = partnersController.SetPartnerPromoCodeLimitAsync(Guid.NewGuid(), setPartnerPromoCodeLimitRequest).Result;
 
-            Assert.IsType<CreatedAtActionResult>(result);
+            Assert.IsType<CreatedResult>(result);
 
         }
-
-
-
-        //SetPartnerPromoCodeLimitAsync
-        //[Fact]
-        //public void SetPartnerPromoCodeLimitAsync_ThrownExceptionsForBadRequest_ReturnsBadRequest()
-        //{
-
-        //    var partnerId = Guid.NewGuid();
-        //    var setPartnerPromoCodeLimitRequest = new SetPartnerPromoCodeLimitRequest();
-
-        //    var partnerRepositoryMock = new Mock<IRepository<Partner>>();
-        //    var partnerPromoCodeLimitRepositoryMock = new Mock<IPartnerPromoCodeLimitRepository>();
-
-        //    partnerPromoCodeLimitRepositoryMock.Setup(u =>
-        //        u.SetPartnerPromoCodeLimitAsync(It.IsAny<Guid>(), It.IsAny<SetPartnerPromoCodeLimitRequest>()).Result)
-        //        .Throws(new PartnerPromoCodeLimitLessOrEqualZeroException(setPartnerPromoCodeLimitRequest));
-
-        //    PartnersController partnersController = new PartnersController(partnerRepositoryMock.Object, partnerPromoCodeLimitRepositoryMock.Object);
-
-        //    var result = partnersController.SetPartnerPromoCodeLimitAsync(partnerId, setPartnerPromoCodeLimitRequest).Result;
-
-        //    var okRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-
-        //}
 
         public void Dispose()
         {
